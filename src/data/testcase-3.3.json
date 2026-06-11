@@ -1,0 +1,46 @@
+{
+  "id": "56396",
+  "section": "3.3",
+  "title": "Import from Aspen Plus (IPEAPEA)",
+  "category": "Import",
+  "tags": [
+    "Aspen Plus",
+    "apw",
+    "apwz",
+    "xml"
+  ],
+  "recommended": true,
+  "help": "Use this case to practice Aspen Plus import workflows and mapping checks.",
+  "subcases": [
+    {
+      "id": "3.3a",
+      "title": ".apw & .apwz file import",
+      "steps": [
+        "Open Aspen Plus sample testprob.bkp (C:\\Program Files\\AspenTech\\Aspen Plus V14.0\\Favorites) in A+, run the simulation, click File/Save As, select Compound File, select .apw as the type to Save. Similarly save another .apwz file. Close A+ without save.",
+        "Launch APEA, new a project and keep all defaults in the dialogs that follow.",
+        "Go to Project Basis. Select Simulation Type: \"Aspen Plus\". OK the message.",
+        "Select Simulation File Name: Browse to the .apw file saved in step 1.",
+        "Run-Load Data. Say yes to message. Go to process view. There are 6 unit ops under Miscellaneous Flowsheet Area.",
+        "Click Run—Map or click the button on menu bar. Select Default and Simulator Data. OK the windows. In process view, icons should turn to green after mapping. In project view, 12 components should be added. Run Evaluate. B2 has some errors which works as expected. Enter some data for the liquid volume. Evaluate again, there should be no errors.",
+        "Repeated step 2-6 with .apwz file."
+      ]
+    },
+    {
+      "id": "3.3b",
+      "title": ".xml file",
+      "steps": [
+        "Create a new US_IP project called Etoh1.",
+        "Keep all defaults in the dialogs that follow.",
+        "Go to Project Basis.",
+        "Select Simulation Type: \"Aspen Plus\". OK the message.",
+        "Select Simulation File Name: Browse to the path. Select files of type \"Aspen Plus xml\" from drop down. Select Etoh1.xml file.",
+        "Run-Load Data. Say yes to message. Go to process view. The icons should be yellow.",
+        "Click Run—Map or click the button on menu bar. Select Default and Simulator Data. OK the windows. In process view, icons should turn to green after mapping. In project view, the components should be added.",
+        "Run Evaluate. Save the project for next case testing."
+      ]
+    }
+  ],
+  "helpRefs": [
+    "import-aspen-plus-html"
+  ]
+}

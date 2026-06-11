@@ -1,0 +1,25 @@
+[
+  {
+    "id": "custom-model-html",
+    "title": "Activating Custom Models",
+    "path": "help/custom-model.html",
+    "text": "Activating Custom Models Activating Custom Models Custom models let you override the default mapping and use simulator stream data when sizing equipment such as reflux pumps and towers. Enabling Custom Model Mode Open Tools - Preferences and select the Process tab. Check \"Activate Custom Model\" and confirm the preference window. Inspect the relevant streams (for example ICP-REF and ICP-REFEX) in the Project Basic View to read liquid flow rate, design gauge pressure, and design temperature.",
+    "tags": [
+      "Activating",
+      "Custom",
+      "Models"
+    ]
+  },
+  {
+    "id": "import-aspen-plus-html",
+    "title": "Importing from Aspen Plus",
+    "path": "help/import-aspen-plus.html",
+    "text": "Importing from Aspen Plus Importing from Aspen Plus Aspen Capital Cost Estimator (ACCE) can load process data directly from Aspen Plus simulations. Supported input formats include compound files (.apw, .apwz) and Aspen Plus XML files. Workflow Set the Simulation Type to \"Aspen Plus\" in the Project Basis. Browse to the simulation file and run Load Data. Map the loaded unit operations to size and cost the equipment. Run Evaluate to produce the project cost. After mapping, icons in the process view turn green when components are successfully recognized and sized.",
+    "tags": [
+      "Importing",
+      "from",
+      "Aspen",
+      "Plus"
+    ]
+  }
+]

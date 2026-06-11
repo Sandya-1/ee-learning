@@ -1,0 +1,21 @@
+{
+  "id": "46133",
+  "section": "3.4",
+  "title": "Custom Model",
+  "category": "Custom Model",
+  "tags": [
+    "custom",
+    "streams",
+    "ICP-REF",
+    "ICP-REFEX"
+  ],
+  "recommended": true,
+  "help": "Enable custom model mode before validating stream values in process and basic views.",
+  "steps": [
+    "Open the above Etoh1 project, go to Tools-Preference-Process Tab. Select \"Activate Custom Model\" and OK the preference window.",
+    "The Data is from streams: ICP-REF and ICP-REFEX. In the Project Process View, double click the component \"TOWER-reflux pump\" and find the Reflux pump streams. Go to the Project Basic View and click Streams to select ICP-REFEX ICP-REF stream. Note down the values of Liquid flow rate, Design gauge pressure, Design temperature."
+  ],
+  "helpRefs": [
+    "custom-model-html"
+  ]
+}
