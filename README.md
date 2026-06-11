@@ -131,6 +131,6 @@ python scripts/index_help.py /path/to/help-folder
 ### 在应用中使用
 
 - **帮助中心**：导航栏的 "Help Center" 列出所有 help 文档，右侧用 `iframe` 内嵌展示，并可在新标签打开。
-- **全局搜索**：help 文档的标题与正文已纳入搜索，结果出现在 "Help 文档" 区块。
+- **全局搜索**：help 文档的标题与正文已纳入搜索，结果出现在 "Help Documents" 区块。
 - **关联展示**：在 test case JSON 中配置 `helpRefs`，详情页侧栏的 "Related Help" 会列出对应 help 文档。
 

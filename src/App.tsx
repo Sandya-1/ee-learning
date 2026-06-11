@@ -339,7 +339,7 @@ function App() {
                 })}
                 {filteredHelpDocs.length > 0 && (
                   <div className="mb-4">
-                    <h3 className="mb-2 font-semibold">Help 文档</h3>
+                    <h3 className="mb-2 font-semibold">Help Documents</h3>
                     <div className="space-y-2">
                       {filteredHelpDocs.map((doc) => (
                         <button
