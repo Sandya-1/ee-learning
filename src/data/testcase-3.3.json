@@ -3,7 +3,12 @@
   "section": "3.3",
   "title": "Import from Aspen Plus (IPEAPEA)",
   "category": "Import",
-  "tags": ["Aspen Plus", "apw", "apwz", "xml"],
+  "tags": [
+    "Aspen Plus",
+    "apw",
+    "apwz",
+    "xml"
+  ],
   "recommended": true,
   "help": "Use this case to practice Aspen Plus import workflows and mapping checks.",
   "subcases": [
@@ -34,5 +39,8 @@
         "Run Evaluate. Save the project for next case testing."
       ]
     }
+  ],
+  "helpRefs": [
+    "import-aspen-plus-html"
   ]
 }

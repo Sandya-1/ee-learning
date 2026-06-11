@@ -61,10 +61,14 @@ npm run build
 ```text
 ee-learning/
 ├── scripts/
-│   └── convert_docs.py          # Azure DevOps 文档转 JSON 脚本
+│   ├── convert_docs.py          # Azure DevOps 文档转 JSON 脚本
+│   └── index_help.py            # HTML help 文档索引脚本
+├── public/
+│   └── help/                    # HTML help 文档（静态资源）
 ├── src/
 │   ├── data/                    # test case JSON 数据
-│   ├── App.tsx                  # 主界面（仪表板/分类/详情/搜索/进度）
+│   │   └── help/                # help 索引 JSON (help-index.json)
+│   ├── App.tsx                  # 主界面（仪表板/分类/详情/搜索/进度/帮助中心）
 │   ├── index.css                # Tailwind 样式入口
 │   └── main.tsx                 # React 启动入口
 ├── requirements.txt             # Python 依赖
@@ -84,6 +88,7 @@ ee-learning/
   "tags": ["Aspen Plus", "apw", "apwz", "xml"],
   "recommended": true,
   "help": "帮助提示文本",
+  "helpRefs": ["import-aspen-plus-html"],
   "subcases": [
     {
       "id": "3.3a",
@@ -97,4 +102,35 @@ ee-learning/
 
 - `subcases` 和 `steps` 至少提供一种。
 - `recommended: true` 的条目会显示在推荐测试列表。
+- `helpRefs` 是可选数组，值为 help 文档的 `id`（或 `path`），用于在详情页关联展示 help 文档。
 - 应用会自动读取 `src/data/*.json`。
+
+## 7. 如何融入 EE Help 文档（HTML）
+
+help 文档以静态 HTML 原样保留，并生成索引供搜索与关联。
+
+### 运行索引脚本
+
+```bash
+pip install -r requirements.txt
+python scripts/index_help.py /path/to/help-folder
+```
+
+脚本会：
+
+1. 把 help 文件夹（HTML、图片、CSS 等）拷贝到 `public/help/`，路径保持稳定（如 `/help/xxx.html`）。
+2. 递归扫描 `.htm/.html`，提取标题（`<title>` 或首个 `<h1>`）和纯文本正文。
+3. 输出索引到 `src/data/help/help-index.json`，每条含 `{ id, title, path, text, tags }`。
+
+可选参数：
+
+- `--public-dir`：静态文件目标目录（默认 `public/help`）
+- `--output`：索引输出路径（默认 `src/data/help/help-index.json`）
+- `--no-copy-assets`：仅重建索引，不重新拷贝文件
+
+### 在应用中使用
+
+- **帮助中心**：导航栏的 "Help Center" 列出所有 help 文档，右侧用 `iframe` 内嵌展示，并可在新标签打开。
+- **全局搜索**：help 文档的标题与正文已纳入搜索，结果出现在 "Help 文档" 区块。
+- **关联展示**：在 test case JSON 中配置 `helpRefs`，详情页侧栏的 "Related Help" 会列出对应 help 文档。
+

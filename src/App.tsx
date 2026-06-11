@@ -15,10 +15,19 @@ type TestCase = {
   steps?: string[]
   subcases?: Subcase[]
   help?: string
+  helpRefs?: string[]
   recommended?: boolean
 }
 
-type CaseView = 'dashboard' | 'category' | 'detail'
+type HelpDoc = {
+  id: string
+  title: string
+  path: string
+  text: string
+  tags: string[]
+}
+
+type CaseView = 'dashboard' | 'category' | 'detail' | 'help'
 type Theme = 'light' | 'dark'
 
 const modules = import.meta.glob<{ default: TestCase | TestCase[] }>('./data/*.json', {
@@ -28,6 +37,22 @@ const modules = import.meta.glob<{ default: TestCase | TestCase[] }>('./data/*.j
 const allCases = Object.values(modules).flatMap(({ default: payload }) =>
   Array.isArray(payload) ? payload : [payload],
 )
+
+const helpModules = import.meta.glob<{ default: HelpDoc | HelpDoc[] }>('./data/help/*.json', {
+  eager: true,
+})
+
+const allHelpDocs = Object.values(helpModules).flatMap(({ default: payload }) =>
+  Array.isArray(payload) ? payload : [payload],
+)
+
+const helpById = new Map(allHelpDocs.map((doc) => [doc.id, doc]))
+
+function resolveHelpDocs(testCase: TestCase): HelpDoc[] {
+  return (testCase.helpRefs ?? [])
+    .map((ref) => helpById.get(ref) ?? allHelpDocs.find((doc) => doc.path === ref))
+    .filter((doc): doc is HelpDoc => Boolean(doc))
+}
 
 const PROGRESS_KEY = 'ee-learning-progress-v1'
 const THEME_KEY = 'ee-learning-theme'
@@ -53,6 +78,14 @@ function includesTerm(caseData: TestCase, term: string): boolean {
   ]
 
   return haystacks.some((value) => normalize(value).includes(term))
+}
+
+function helpIncludesTerm(doc: HelpDoc, term: string): boolean {
+  if (!term) {
+    return true
+  }
+
+  return [doc.title, doc.text, ...doc.tags].some((value) => normalize(value).includes(term))
 }
 
 function stepGroups(caseData: TestCase): Array<{ id: string; title: string; steps: string[] }> {
@@ -92,6 +125,7 @@ function App() {
   const [view, setView] = useState<CaseView>('dashboard')
   const [activeCategory, setActiveCategory] = useState(defaultCategory)
   const [activeCaseId, setActiveCaseId] = useState(allCases[0]?.id ?? '')
+  const [activeHelpId, setActiveHelpId] = useState(allHelpDocs[0]?.id ?? '')
   const [searchTerm, setSearchTerm] = useState('')
   const [sortMode, setSortMode] = useState<'section' | 'title'>('section')
   const [theme, setTheme] = useState<Theme>(() => {
@@ -136,6 +170,13 @@ function App() {
   const selectedCase = allCases.find((testCase) => testCase.id === activeCaseId)
   const recommendedCases = filteredCases.filter((testCase) => testCase.recommended)
 
+  const filteredHelpDocs = useMemo(
+    () => allHelpDocs.filter((doc) => helpIncludesTerm(doc, term)),
+    [term],
+  )
+
+  const selectedHelpDoc = allHelpDocs.find((doc) => doc.id === activeHelpId)
+
   const totals = useMemo(() => {
     return allCases.reduce<Record<string, number>>((acc, item) => {
       acc[item.category] = (acc[item.category] ?? 0) + 1
@@ -161,6 +202,11 @@ function App() {
   const openCase = (id: string) => {
     setActiveCaseId(id)
     setView('detail')
+  }
+
+  const openHelp = (id: string) => {
+    setActiveHelpId(id)
+    setView('help')
   }
 
   const toggleStep = (key: string) => {
@@ -204,6 +250,13 @@ function App() {
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
             >
               Category
+            </button>
+            <button
+              type="button"
+              onClick={() => setView('help')}
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+            >
+              Help Center
             </button>
             <input
               value={searchTerm}
@@ -284,6 +337,23 @@ function App() {
                     </div>
                   )
                 })}
+                {filteredHelpDocs.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="mb-2 font-semibold">Help 文档</h3>
+                    <div className="space-y-2">
+                      {filteredHelpDocs.map((doc) => (
+                        <button
+                          key={doc.id}
+                          type="button"
+                          onClick={() => openHelp(doc.id)}
+                          className="w-full rounded-lg border border-slate-200 p-2 text-left hover:border-indigo-300 hover:bg-indigo-50 dark:border-slate-700 dark:hover:bg-slate-800"
+                        >
+                          {highlightText(doc.title, term)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </section>
@@ -397,7 +467,79 @@ function App() {
                   </li>
                 ))}
               </ul>
+
+              {resolveHelpDocs(selectedCase).length > 0 && (
+                <div className="mt-5">
+                  <h3 className="mb-3 font-semibold">Related Help</h3>
+                  <ul className="space-y-2">
+                    {resolveHelpDocs(selectedCase).map((doc) => (
+                      <li key={`help-${doc.id}`}>
+                        <button
+                          type="button"
+                          onClick={() => openHelp(doc.id)}
+                          className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-left text-sm hover:border-indigo-300 hover:bg-indigo-50 dark:border-slate-700 dark:hover:bg-slate-800"
+                        >
+                          📖 {doc.title}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </aside>
+          </section>
+        )}
+
+        {view === 'help' && (
+          <section className="grid gap-4 lg:grid-cols-[280px_1fr]">
+            <aside className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+              <h2 className="mb-3 text-lg font-semibold">Help Center</h2>
+              <ul className="space-y-2">
+                {filteredHelpDocs.map((doc) => (
+                  <li key={`center-${doc.id}`}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveHelpId(doc.id)}
+                      className={`block w-full rounded-lg border px-3 py-2 text-left text-sm hover:border-indigo-300 hover:bg-indigo-50 dark:hover:bg-slate-800 ${
+                        doc.id === activeHelpId
+                          ? 'border-indigo-400 bg-indigo-50 dark:bg-slate-800'
+                          : 'border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      {highlightText(doc.title, term)}
+                    </button>
+                  </li>
+                ))}
+                {!filteredHelpDocs.length && (
+                  <li className="text-sm text-slate-500">No matching help documents.</li>
+                )}
+              </ul>
+            </aside>
+
+            <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+              {selectedHelpDoc ? (
+                <>
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h2 className="text-xl font-semibold">{selectedHelpDoc.title}</h2>
+                    <a
+                      href={`${import.meta.env.BASE_URL}${selectedHelpDoc.path}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-lg border border-slate-300 px-3 py-1 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                    >
+                      Open in new tab ↗
+                    </a>
+                  </div>
+                  <iframe
+                    title={selectedHelpDoc.title}
+                    src={`${import.meta.env.BASE_URL}${selectedHelpDoc.path}`}
+                    className="h-[70vh] w-full rounded-lg border border-slate-200 bg-white dark:border-slate-700"
+                  />
+                </>
+              ) : (
+                <p className="text-sm text-slate-500">No help documents available yet.</p>
+              )}
+            </article>
           </section>
         )}
       </div>
