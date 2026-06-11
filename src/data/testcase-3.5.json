@@ -1,0 +1,16 @@
+{
+  "id": "35000",
+  "section": "3.5",
+  "title": "Project Evaluation",
+  "category": "Evaluate",
+  "tags": ["evaluate", "cost", "report"],
+  "recommended": true,
+  "help": "Use this quick check to confirm mapped projects evaluate and export correctly.",
+  "steps": [
+    "Open a sample project with mapped components.",
+    "Click Run - Evaluate or press the Evaluate button.",
+    "Check the evaluation results for all components.",
+    "Verify total project cost is calculated correctly.",
+    "Export evaluation report to Excel."
+  ]
+}
